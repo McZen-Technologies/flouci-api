@@ -1,0 +1,220 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Flouci Payment API",
+    "version": "4.9",
+    "description": "API for generating and verifying payments through Flouci platform"
+  },
+  "servers": [
+    {
+      "url": "https://developers.flouci.com/api",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/generate_payment": {
+      "post": {
+        "summary": "Generate a new payment",
+        "description": "Creates a new payment and returns a payment link",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "app_token",
+                  "app_secret",
+                  "amount",
+                  "success_link",
+                  "fail_link"
+                ],
+                "properties": {
+                  "app_token": {
+                    "type": "string",
+                    "description": "Your application token"
+                  },
+                  "app_secret": {
+                    "type": "string",
+                    "description": "Your application secret"
+                  },
+                  "accept_card": {
+                    "type": "string",
+                    "enum": ["true", "false"],
+                    "description": "Whether to accept card payments"
+                  },
+                  "amount": {
+                    "type": "string",
+                    "description": "Payment amount",
+                    "example": "5000"
+                  },
+                  "success_link": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to redirect after successful payment"
+                  },
+                  "fail_link": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to redirect after failed payment"
+                  },
+                  "developer_tracking_id": {
+                    "type": "string",
+                    "description": "Your internal tracking ID for this payment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successfully generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "link": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Payment URL"
+                        },
+                        "payment_id": {
+                          "type": "string",
+                          "description": "Unique payment identifier"
+                        },
+                        "developer_tracking_id": {
+                          "type": "string",
+                          "description": "Your internal tracking ID"
+                        },
+                        "success": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "developers"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "4.9"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify_payment/{payment_id}": {
+      "get": {
+        "summary": "Verify payment status",
+        "description": "Check the status of a specific payment",
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The payment ID to verify"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment verification response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": ["SUCCESS", "PENDING", "FAILED"],
+                          "description": "Current status of the payment"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["card", "flouci"],
+                          "description": "Payment method used"
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "order_number": {
+                              "type": "string",
+                              "description": "Unique order identifier"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Customer's full name"
+                            },
+                            "phone_number": {
+                              "type": "string",
+                              "description": "Customer's phone number"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "description": "Customer's email address"
+                            }
+                          }
+                        },
+                        "developer_tracking_id": {
+                          "type": "string",
+                          "description": "Your internal tracking ID"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apppublic"
+      },
+      "ApiSecretAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "appsecret"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": [],
+      "ApiSecretAuth": []
+    }
+  ]
+}

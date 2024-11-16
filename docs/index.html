@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unofficial Documentation for Flouci API</title>
+    <meta name="description" content="Comprehensive unofficial documentation for Flouci API - Learn how to integrate payments, manage transactions, and implement Flouci in your applications." />
+    <meta name="keywords" content="Flouci, API Documentation, Payment Integration, Tunisia Payment Gateway" />
+    <meta name="author" content="MCzen Technologies" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://mczen-technologies.com/favicon.ico" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mczen-technologies.github.io/flouci-api/" />
+    <meta property="og:title" content="Unofficial Documentation for Flouci API" />
+    <meta property="og:description" content="Comprehensive unofficial documentation for Flouci API - Learn how to integrate payments and manage transactions." />
+    <meta property="og:image" content="https://mczen-technologies.com/assets/img/mczen-technologies.jpg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:site" content="@mczen_tech" />
+    
+    <!-- Preload -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    
+    <style>
+        :root {
+            --primary-color: #6B46C1;
+            --text-color: #2D3748;
+            --bg-color: #F7FAFC;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #error {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            background: #FED7D7;
+            border-left: 4px solid #C53030;
+            border-radius: 4px;
+            color: #C53030;
+            z-index: 1000;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .version {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem">Loading documentation...</p>
+    </div>
+    
+    <div id="error">
+        Failed to load API documentation. Please try refreshing the page.
+    </div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Flouci API Docs</div>
+            <div class="version">Unofficial Documentation</div>
+        </div>
+    </header>
+
+    <script id="api-reference" data-url="https://cdn.jsdelivr.net/gh/mczen-technologies/flouci-api@main/spec.json"></script>
+    
+    <script>
+        // Configuration for API Reference
+        const configuration = {
+            theme: 'purple',
+            hideExport: false,
+            hideInternal: true,
+            downloadFileName: 'Flouci-api-spec',
+            scrollYOffset: 60,
+            expandResponses: "200,201",
+            showExtensions: false,
+            noAutoAuth: false,
+            pathInMiddlePanel: false,
+            requiredPropsFirst: true,
+        };
+
+        // Initialize API Reference
+        const apiReference = document.getElementById('api-reference');
+        apiReference.dataset.configuration = JSON.stringify(configuration);
+
+        // Loading state management
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+
+        // Function to handle loading error
+        function handleLoadError() {
+            loading.style.display = 'none';
+            error.style.display = 'block';
+            console.error('Failed to load API documentation');
+        }
+
+        // Function to handle successful load
+        function handleLoadSuccess() {
+            loading.style.display = 'none';
+        }
+
+        // Load API Reference script
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
+        script.onload = handleLoadSuccess;
+        script.onerror = handleLoadError;
+        document.body.appendChild(script);
+
+        // Add timeout for loading
+        setTimeout(() => {
+            if (loading.style.display !== 'none') {
+                handleLoadError();
+            }
+        }, 10000);
+
+        // Service Worker Registration for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Analytics (if needed)
+        if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+            // Add your analytics code here
+        }
+    </script>
+</body>
+</html>
